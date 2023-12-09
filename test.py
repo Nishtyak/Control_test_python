@@ -39,14 +39,15 @@ def read_notes():
     with open('notes.csv', encoding='utf-8') as f_n:
         f_n_reader = DictReader(f_n)
         notes = list(f_n_reader)
+        print('id Заголовок')
         for item in notes:
-            print(item['Заголовок'])
+            print(item['id'] + '  '+ item['Заголовок'])
 
 
 
 def main():
     print("Создать заметку: create")
-    print("Сохранить заметку: save")
+    # print("Сохранить заметку: save")
     print("Список заметок: read")
     print("Редактировать заметку: edit")
     print("Найти заметку по названию: name")
@@ -69,6 +70,7 @@ def main():
                 print('Заметок нет')
                 break
             read_notes()
+
 
 
 main()
