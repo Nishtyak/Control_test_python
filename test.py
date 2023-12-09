@@ -58,6 +58,22 @@ def edit_note():
             f_n_writer = DictWriter(f_n, fieldnames=['id', 'Заголовок', 'Заметка']) #, 'create_time', 'edit_time'
             f_n_writer.writerow(el)
 
+def show_note_by_name():
+    name = input('Введите название заметки: ')
+    notes = []
+    with open('notes.csv', encoding='utf-8') as f_n:
+        f_n_reader = DictReader(f_n)
+        notes = list(f_n_reader)
+        result = True
+        for el in notes:
+            if el['Заголовок'] == name:
+                print("Искомая заметка: ")
+                print(*el.values())
+                result = False
+        if (result):
+            print('Такой заметки нет')
+
+
 
 
 def main():
@@ -91,6 +107,12 @@ def main():
                 break
             else:
                 edit_note()
+        elif command == 'name':
+            if not exists('notes.csv'):
+                print('Заметок нет')
+                break
+            else:
+                show_note_by_name()
 
 
 
