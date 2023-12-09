@@ -33,7 +33,14 @@ def write_file(lst):
     #     for el in res:
     #         f_n_writer.writerow(el)
     with open("notes.csv", "a", encoding='utf-8') as data:
-      data.write(f'{lst[0]};{lst[1]};{lst[2]}\n')
+      data.write(f'{lst[0]},{lst[1]},{lst[2]}\n')
+
+def read_notes():
+    with open('notes.csv', encoding='utf-8') as f_n:
+        f_n_reader = DictReader(f_n)
+        notes = list(f_n_reader)
+        for item in notes:
+            print(item['Заголовок'])
 
 
 
@@ -47,8 +54,6 @@ def main():
     print("Удалить заметку: delete")
     print("Для выхода: exit")
 
-
-
     while True:
         command = input("Введите команду: ")
         if command == 'exit':
@@ -59,5 +64,11 @@ def main():
                 record_note()
             else:
                 record_note()
+        elif command == 'read':
+            if not exists('notes.csv'):
+                print('Заметок нет')
+                break
+            read_notes()
+
 
 main()
