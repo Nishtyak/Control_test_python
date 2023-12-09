@@ -1,22 +1,28 @@
 from os.path import exists
 from csv import DictReader, DictWriter
 import os
+import datetime
 def get_note():
     info = []
     with open('notes.csv', encoding='utf-8') as f_n:
         f_n_reader = DictReader(f_n)
         notes = list(f_n_reader)
-        id = len(notes) + 1
+        if len(notes) == 0:
+            id = 1
+        else:
+            id = int(notes[len(notes) - 1]['id']) + 1
     info.append(id)
     title = input('Введите заголовок заметки: ')
     body = input('Введите текст заметки: ')
     info.append(title)
     info.append(body)
-
+    time = str(datetime.datetime.today().strftime("%Y-%m-%d %H.%M"))
+    info.append(time)
+    info.append(time)
     return info
 def create_file():
     with open("notes.csv", "w", encoding='utf-8') as data:
-        f_n_writer = DictWriter(data, fieldnames =[ 'id', 'Заголовок', 'Заметка' ]) #, 'create_time', 'edit_time'
+        f_n_writer = DictWriter(data, fieldnames =[ 'id', 'Заголовок', 'Заметка' , 'Дата создания', 'Дата изменения'])
         f_n_writer.writeheader()
 
 def record_note():
@@ -33,15 +39,15 @@ def write_file(lst):
     #     for el in res:
     #         f_n_writer.writerow(el)
     with open("notes.csv", "a", encoding='utf-8') as data:
-      data.write(f'{lst[0]},{lst[1]},{lst[2]}\n')
+      data.write(f'{lst[0]},{lst[1]},{lst[2]},{lst[3]},{lst[4]}\n')
 
 def read_notes():
     with open('notes.csv', encoding='utf-8') as f_n:
         f_n_reader = DictReader(f_n)
         notes = list(f_n_reader)
-        print('id Заголовок')
+        print('id | Заголовок | Дата создания')
         for item in notes:
-            print(item['id'] + '  '+ item['Заголовок'])
+            print(item['id'] + ' | '+ item['Заголовок']+ ' | ' + item['Дата создания'])
 
 def edit_note():
     num = input('Введите id заметки для редактирования: ')
@@ -55,7 +61,9 @@ def edit_note():
             if el['id'] == num:
                 el['Заголовок'] = input("Введите новый заголовок: ")
                 el['Заметка'] = input('Введите новый текст заметки: ')
-            f_n_writer = DictWriter(f_n, fieldnames=['id', 'Заголовок', 'Заметка']) #, 'create_time', 'edit_time'
+                time = str(datetime.datetime.today().strftime("%Y-%m-%d %H.%M"))
+                el['Дата изменения'] = time
+            f_n_writer = DictWriter(f_n, fieldnames=['id', 'Заголовок', 'Заметка', 'Дата создания', 'Дата изменения'])
             f_n_writer.writerow(el)
 
 def show_note_by_name():
@@ -73,16 +81,40 @@ def show_note_by_name():
         if (result):
             print('Такой заметки нет')
 
+def delete_note():
+    num = input('Введите id заметки для удаления: ')
+    notes = []
+    with open('notes.csv', encoding='utf-8') as f_n:
+        f_n_reader = DictReader(f_n)
+        notes = list(f_n_reader)
+    create_file()
+    with open('notes.csv', 'a', encoding='utf-8') as f_n:
+        for el in notes:
+            if el['id'] != num:
+                f_n_writer = DictWriter(f_n, fieldnames=['id', 'Заголовок', 'Заметка', 'Дата создания', 'Дата изменения'])
+                f_n_writer.writerow(el)
 
-
-
+def show_note_by_time():
+    find_time = input('Введите время в формате год-месяц-день часы.минуты: ')
+    notes = []
+    with open('notes.csv', encoding='utf-8') as f_n:
+        f_n_reader = DictReader(f_n)
+        notes = list(f_n_reader)
+        result = True
+        for el in notes:
+            if el['Дата создания'] == find_time:
+                print("Искомая заметка: ")
+                print(*el.values())
+                result = False
+        if (result):
+            print('Такой заметки нет')
 def main():
     print("Создать заметку: create")
     # print("Сохранить заметку: save")
     print("Список заметок: read")
     print("Редактировать заметку: edit")
     print("Найти заметку по названию: name")
-    print("Выборка по дате: date")
+    print("Выборка по дате: time")
     print("Удалить заметку: delete")
     print("Для выхода: exit")
 
@@ -113,6 +145,18 @@ def main():
                 break
             else:
                 show_note_by_name()
+        elif command == 'delete':
+            if not exists('notes.csv'):
+                print('Заметок нет')
+                break
+            else:
+                delete_note()
+        elif command == 'time':
+            if not exists('notes.csv'):
+                print('Заметок нет')
+                break
+            else:
+                show_note_by_time()
 
 
 
